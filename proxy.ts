@@ -1,6 +1,37 @@
+import { auth } from '@clerk/nextjs';
 import { clerkMiddleware } from '@clerk/nextjs/server'
+import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { existsSync } from "node:fs";
 
-export default clerkMiddleware()
+export default clerkMiddleware(async (auth, req: NextRequest) => {
+  const isMaintenance = process.env.MAINTENANCE_MODE === "true";
+  let hasSentinel = false;
+
+  try {
+    hasSentinel = existsSync(".maintenance");
+  } catch {}
+
+    if (isMaintenance || hasSentinel) {
+      // Allow the maintenance page itself.
+      if (req.nextUrl.pathname.startsWith("/maintenance")) {
+        return NextResponse.next();
+      }
+      const url = req.nextUrl.clone();
+      url.pathname = "/maintenance";
+      return NextResponse.rewrite(url);
+    }
+
+  // ----- Clerk authentication guard ----------------------------------------
+  const pathname = req.nextUrl.pathname;
+  if (
+    pathname === "/"
+  ) {
+    const { isAuthenticated, redirectToSignIn } = await auth();
+    if (!isAuthenticated) return redirectToSignIn();
+  }
+
+});
 
 export const config = {
   matcher: [
