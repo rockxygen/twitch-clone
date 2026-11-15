@@ -8,7 +8,7 @@ html,
 body,
 :root {
   height: 100vh;
-  @apply bg-neutral-900/80;
+  @apply bg-zinc-700/10;
 }
 
 .hidden-scrollbar::-webkit-scrollbar {

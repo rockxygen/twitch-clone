@@ -19,12 +19,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark
+      }}
+    >
       <html
         lang="en"
         className={`${inter.className} h-full antialiased`}
         >
-        <body className="flex justify-center items-center w-full h-full">
+        <body className="flex justify-center items-center w-full min-h-full">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
