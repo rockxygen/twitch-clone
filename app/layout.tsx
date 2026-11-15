@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs';
 import { Suspense } from "react";
 import "./globals.css";
+import { dark } from "@clerk/themes";
+
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,12 +24,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         lang="en"
         className={`${inter.className} h-full antialiased`}
         >
-        <body>
-          <div className="flex justify-center items-center w-full h-full">
+        <body className="flex justify-center items-center w-full h-full">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             <Suspense>
-              {children}
+                {children}
             </Suspense>
-          </div>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

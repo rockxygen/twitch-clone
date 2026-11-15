@@ -8,6 +8,11 @@ html,
 body,
 :root {
   height: 100vh;
+  @apply bg-neutral-900/80;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @theme inline {
