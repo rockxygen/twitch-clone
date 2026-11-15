@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
   },
+  allowedDevOrigins: ['spotted-rounding-material.ngrok-free.dev'],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
