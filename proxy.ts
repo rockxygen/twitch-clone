@@ -3,6 +3,7 @@ import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { existsSync } from "node:fs";
+import { PrismaClient } from '@prisma/client';
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const isMaintenance = process.env.MAINTENANCE_MODE === "true";
@@ -12,7 +13,17 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     hasSentinel = existsSync(".maintenance");
   } catch {}
 
-    if (isMaintenance || hasSentinel) {
+    let dbDown = false;
+    const prisma = new PrismaClient();
+    try {
+      await prisma.$connect();
+    } catch {
+      dbDown = true;
+    } finally {
+      await prisma.$disconnect();
+    }
+
+    if (isMaintenance || hasSentinel || dbDown) {
       // Allow the maintenance page itself.
       if (req.nextUrl.pathname.startsWith("/maintenance")) {
         return NextResponse.next();
@@ -39,6 +50,7 @@ export const config = {
     '/', // Run middleware on index page
     '/(api|trpc)(.*)', // Run middleware on API routes
     '/__clerk/(.*)', // Run middleware on Clerk frontend API routes
+    '/api/webhooks(.*)'
   ],
 }
 
